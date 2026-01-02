@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>לומדים אנגלית - English Learning</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .screen {
+            display: none;
+            background: white;
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .menu-btn {
+            padding: 25px;
+            font-size: 1.8em;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .menu-btn.active-mode {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            box-shadow: 0 10px 25px rgba(245, 87, 108, 0.4);
+        }
+
+        .menu-btn.active-mode:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(245, 87, 108, 0.5);
+        }
+
+        .menu-btn.disabled {
+            background: #e0e0e0;
+            color: #999;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Flashcard Screen */
+        .back-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            margin-bottom: 20px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #ff5252;
+            transform: scale(1.05);
+        }
+
+        .flashcard {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 20px;
+            padding: 40px 20px;
+            margin-bottom: 30px;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .word-field {
+            text-align: center;
+            width: 100%;
+        }
+
+        .field-label {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .field-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #333;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .english {
+            color: #4a90e2;
+            direction: ltr;
+        }
+
+        .hebrew {
+            color: #e24a4a;
+        }
+
+        .phonetic {
+            color: #50c878;
+        }
+
+        .question-marks {
+            color: #ccc;
+            font-size: 3em;
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 20px;
+            font-size: 1.5em;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            box-shadow: 0 10px 25px rgba(79, 172, 254, 0.4);
+            transition: all 0.3s;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(79, 172, 254, 0.5);
+        }
+
+        .action-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* Spelling Mode Button */
+        .menu-btn.spelling-mode {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            box-shadow: 0 10px 25px rgba(250, 112, 154, 0.4);
+        }
+
+        .menu-btn.spelling-mode:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(250, 112, 154, 0.5);
+        }
+
+        /* Spelling Game Screen */
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 15px;
+            font-size: 1.2em;
+            color: #333;
+        }
+
+        .stats strong {
+            color: #667eea;
+            margin-right: 5px;
+        }
+
+        .spelling-card {
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+            border-radius: 20px;
+            padding: 40px 20px;
+            margin-bottom: 30px;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .input-section {
+            width: 100%;
+            text-align: center;
+        }
+
+        .spelling-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.5em;
+            border: 3px solid #4a90e2;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 10px;
+            font-family: 'Arial', sans-serif;
+            transition: all 0.3s;
+        }
+
+        .spelling-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .spelling-input.correct {
+            border-color: #50c878;
+            background: #e8f8f0;
+        }
+
+        .spelling-input.incorrect {
+            border-color: #ff6b6b;
+            background: #ffe8e8;
+            animation: shake 0.5s;
+        }
+
+        .feedback-message {
+            margin-top: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+            min-height: 30px;
+        }
+
+        .feedback-message.correct {
+            color: #50c878;
+        }
+
+        .feedback-message.incorrect {
+            color: #ff6b6b;
+        }
+
+        /* Confetti Container */
+        .confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            display: none;
+        }
+
+        .confetti-container.active {
+            display: block;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #f0f;
+            animation: confettiFall 2s linear forwards;
+        }
+
+        .star {
+            position: absolute;
+            font-size: 3em;
+            animation: starBurst 2s ease-out forwards;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                top: -10%;
+                opacity: 1;
+                transform: translateX(0) rotateZ(0deg);
+            }
+            100% {
+                top: 100%;
+                opacity: 0;
+                transform: translateX(var(--x-drift)) rotateZ(720deg);
+            }
+        }
+
+        @keyframes starBurst {
+            0% {
+                transform: scale(0) rotate(0deg);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.5) rotate(180deg);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(0.5) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .menu-btn {
+                font-size: 1.5em;
+                padding: 20px;
+            }
+
+            .field-value {
+                font-size: 2em;
+            }
+
+            .flashcard {
+                padding: 30px 15px;
+                min-height: 350px;
+            }
+
+            .spelling-card {
+                padding: 30px 15px;
+                min-height: 350px;
+            }
+
+            .spelling-input {
+                font-size: 1.2em;
+            }
+
+            .stats {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Menu Screen -->
+        <div id="menuScreen" class="screen active">
+            <h1>🎓 לומדים אנגלית</h1>
+            <div class="menu-buttons">
+                <button class="menu-btn active-mode" onclick="startFlashcards()">
+                    כרטיסיה
+                </button>
+                <button class="menu-btn active-mode spelling-mode" onclick="startSpellingGame()">
+                    הכתבה
+                </button>
+                <button class="menu-btn active-mode spelling-mode" onclick="startSpellingGameShort()">
+                    הכתבה עד 5
+                </button>
+                <button class="menu-btn disabled">
+                    משחק
+                </button>
+            </div>
+        </div>
+
+        <!-- Flashcard Screen -->
+        <div id="flashcardScreen" class="screen">
+            <button class="back-btn" onclick="goToMenu()">← חזרה</button>
+
+            <div class="flashcard">
+                <div class="word-field">
+                    <div class="field-label">English</div>
+                    <div id="englishValue" class="field-value english">???</div>
+                </div>
+
+                <div class="word-field">
+                    <div class="field-label">עברית</div>
+                    <div id="hebrewValue" class="field-value hebrew">???</div>
+                </div>
+
+                <div class="word-field">
+                    <div class="field-label">הגייה</div>
+                    <div id="phoneticValue" class="field-value phonetic">???</div>
+                </div>
+            </div>
+
+            <button id="actionBtn" class="action-btn" onclick="handleAction()">
+                גלה
+            </button>
+        </div>
+
+        <!-- Spelling Game Screen -->
+        <div id="spellingGameScreen" class="screen">
+            <button class="back-btn" onclick="goToMenu()">← חזרה</button>
+
+            <div class="stats">
+                <span>ניסיונות: <strong id="totalAttempts">0</strong></span>
+                <span>נכונות: <strong id="correctAttempts">0</strong></span>
+            </div>
+
+            <div class="spelling-card">
+                <div class="word-field">
+                    <div class="field-label">עברית</div>
+                    <div id="spellingHebrew" class="field-value hebrew">???</div>
+                </div>
+
+                <div class="word-field">
+                    <div class="field-label">הגייה</div>
+                    <div id="spellingPhonetic" class="field-value phonetic">???</div>
+                </div>
+
+                <div class="input-section">
+                    <div class="field-label">English</div>
+                    <input
+                        type="text"
+                        id="spellingInput"
+                        class="spelling-input"
+                        placeholder="Type the English word..."
+                        dir="ltr"
+                    />
+                    <div id="feedbackMessage" class="feedback-message"></div>
+                </div>
+            </div>
+
+            <button id="spellingActionBtn" class="action-btn" onclick="handleSpellingAction()">
+                בדוק
+            </button>
+        </div>
+
+        <!-- Confetti Container -->
+        <div id="confettiContainer" class="confetti-container"></div>
+    </div>
+
+    <script>
+        // Word database
+        const words = [
+            { english: 'bus', hebrew: 'אוטובוס', phonetic: 'באס' },
+            { english: 'banana', hebrew: 'בננה', phonetic: 'באנאנא' },
+            { english: 'bat', hebrew: 'עטלף / מחבט', phonetic: 'באט' },
+            { english: 'man', hebrew: 'גבר', phonetic: 'מאן' },
+            { english: 'table', hebrew: 'שולחן', phonetic: 'טייבל' },
+            { english: 'telephone', hebrew: 'טלפון', phonetic: 'טלפון' },
+            { english: 'taxi', hebrew: 'מונית', phonetic: 'טאקסי' },
+            { english: 'music', hebrew: 'מוזיקה', phonetic: 'מיוזיק' },
+            { english: 'mango', hebrew: 'מנגו', phonetic: 'מאנגו' },
+            { english: 'mcdonalds', hebrew: 'מקדונלדס', phonetic: 'מקדונלדס' },
+            { english: 'no', hebrew: 'לא', phonetic: 'נו' },
+            { english: 'nine', hebrew: 'תשע', phonetic: 'ניין' },
+            { english: 'nineteen', hebrew: 'תשע עשרה', phonetic: 'ניינטין' },
+            { english: 'ant', hebrew: 'נמלה', phonetic: 'אנט' },
+            { english: 'Anna', hebrew: 'אנה', phonetic: 'אנה' },
+            { english: 'ben', hebrew: 'בן', phonetic: 'בן' },
+            { english: 'tab', hebrew: 'לשונית / טאבים', phonetic: 'טאב' },
+            { english: 'ban', hebrew: 'לאסור', phonetic: 'באן' },
+            { english: 'good', hebrew: 'טוב', phonetic: 'גוד' },
+            { english: 'gate', hebrew: 'שער', phonetic: 'גייט' },
+            { english: 'garden', hebrew: 'גינה', phonetic: 'גארדן' },
+            { english: 'gold', hebrew: 'זהב', phonetic: 'גולד' },
+            { english: 'guitar', hebrew: 'גיטרה', phonetic: 'גיטאר' },
+            { english: 'fish', hebrew: 'דג', phonetic: 'פיש' },
+            { english: 'insect', hebrew: 'חרק', phonetic: 'אינסקט' },
+            { english: 'Israel', hebrew: 'ישראל', phonetic: 'איזראל' },
+            { english: 'igloo', hebrew: 'איגלו', phonetic: 'איגלו' },
+            { english: 'octopus', hebrew: 'תמנון', phonetic: 'אוקטופוס' },
+            { english: 'ear', hebrew: 'אוזן', phonetic: 'איר' },
+            { english: 'eat', hebrew: 'לאכול', phonetic: 'איט' },
+            { english: 'end', hebrew: 'סוף', phonetic: 'אנד' },
+            { english: 'evening', hebrew: 'ערב', phonetic: 'איבנינג' },
+            { english: 'eight', hebrew: 'שמונה', phonetic: 'אייט' },
+            { english: 'sushi', hebrew: 'סושי', phonetic: 'סושי' },
+            { english: 'elephant', hebrew: 'פיל', phonetic: 'אלפנט' },
+            { english: 'jump', hebrew: 'לקפוץ', phonetic: 'ג׳אמפ' },
+            { english: 'joy', hebrew: 'שמחה / ג׳וי', phonetic: 'ג׳וי' },
+            { english: 'jellyfish', hebrew: 'מדוזה', phonetic: 'ג׳ליפיש' },
+            { english: 'juice', hebrew: 'מיץ', phonetic: 'ג׳וס' },
+            { english: 'jar', hebrew: 'צנצנת', phonetic: 'ג׳אר' },
+            { english: 'boy', hebrew: 'ילד', phonetic: 'בוי' },
+            { english: 'jam', hebrew: 'ריבה', phonetic: 'ג׳אם' },
+            { english: 'mix', hebrew: 'לערבב', phonetic: 'מיקס' },
+            { english: 'on', hebrew: 'על / דלוק', phonetic: 'און' },
+            { english: 'hot', hebrew: 'חם', phonetic: 'הוט' },
+            { english: 'dot', hebrew: 'נקודה', phonetic: 'דוט' },
+            { english: 'hat', hebrew: 'כובע', phonetic: 'האט' },
+            { english: 'sob', hebrew: 'ליבב', phonetic: 'סאב' },
+            { english: 'hob', hebrew: 'כיריים', phonetic: 'הוב' },
+            { english: 'cot', hebrew: 'מיטת תינוק', phonetic: 'קאוט' },
+            { english: 'fob', hebrew: '—', phonetic: 'פוב' },
+            { english: 'fan', hebrew: 'מאוורר / מעריץ', phonetic: 'פאן' },
+            { english: 'fin', hebrew: 'סנפיר', phonetic: 'פין' },
+            { english: 'fat', hebrew: 'שמן', phonetic: 'פאט' },
+            { english: 'hand', hebrew: 'יד', phonetic: 'האנד' },
+            { english: 'cat', hebrew: 'חתול', phonetic: 'קאט' },
+            { english: 'cab', hebrew: 'מונית', phonetic: 'קאב' },
+            { english: 'hamburger', hebrew: 'המבורגר', phonetic: 'המבורגר' },
+            { english: 'coffee', hebrew: 'קפה', phonetic: 'קופי' },
+            { english: 'cake', hebrew: 'עוגה', phonetic: 'קייק' },
+            { english: 'candy', hebrew: 'סוכריה', phonetic: 'קנדי' },
+            { english: 'cactus', hebrew: 'קקטוס', phonetic: 'קקטוס' },
+            { english: 'snail', hebrew: 'חילזון', phonetic: 'סנייל' },
+            { english: 'starfish', hebrew: 'כוכב ים', phonetic: 'סטארפיש' },
+            { english: 'skateboard', hebrew: 'סקייטבורד', phonetic: 'סקייטבורד' },
+            { english: 'seven', hebrew: 'שבע', phonetic: 'סבן' },
+            { english: 'spider', hebrew: 'עכביש', phonetic: 'ספיידר' },
+            { english: 'sit', hebrew: 'לשבת', phonetic: 'סיט' },
+            { english: 'sat', hebrew: 'ישב', phonetic: 'סאט' },
+            { english: 'send', hebrew: 'לשלוח', phonetic: 'סנד' },
+            { english: 'frog', hebrew: 'צפרדע', phonetic: 'פרוג' },
+            { english: 'girl', hebrew: 'ילדה', phonetic: 'גֶרְל (גּרל)' },
+            { english: 'gift', hebrew: 'מתנה', phonetic: 'גיפט' },
+            { english: 'tax', hebrew: 'מס', phonetic: 'טאקס' },
+            { english: 'fax', hebrew: 'פקס', phonetic: 'פאקס' },
+            { english: 'fix', hebrew: 'לתקן', phonetic: 'פיקס' },
+            { english: 'six', hebrew: 'שש', phonetic: 'סיקס' },
+            { english: 'toxic', hebrew: 'רעיל', phonetic: 'טוקסיק' },
+            { english: 'box', hebrew: 'קופסה', phonetic: 'בוקס' },
+            { english: 'can', hebrew: 'יכול / פחית', phonetic: 'קאן' },
+            { english: 'bad', hebrew: 'רע', phonetic: 'באד' },
+            { english: 'yellow', hebrew: 'צהוב', phonetic: 'ילואו' },
+            { english: 'yard', hebrew: 'חצר', phonetic: 'יארד' },
+            { english: 'yoga', hebrew: 'יוגה', phonetic: 'יוגה' },
+            { english: 'yes', hebrew: 'כן', phonetic: 'יס' },
+            { english: 'you', hebrew: 'אתה / אתם', phonetic: 'יו' },
+            { english: 'best', hebrew: 'הכי טוב', phonetic: 'בסט' },
+            { english: 'rain', hebrew: 'גשם', phonetic: 'ריין' },
+            { english: 'rainbow', hebrew: 'קשת', phonetic: 'ריינבואו' },
+            { english: 'red', hebrew: 'אדום', phonetic: 'רד' },
+            { english: 'rice', hebrew: 'אורז', phonetic: 'רייס' },
+            { english: 'right', hebrew: 'ימין / נכון', phonetic: 'רייט' },
+            { english: 'robot', hebrew: 'רובוט', phonetic: 'רובוט' },
+            { english: 'ring', hebrew: 'טבעת', phonetic: 'רינג' },
+            { english: 'ball', hebrew: 'כדור', phonetic: 'בול' },
+            { english: 'bee', hebrew: 'דבורה', phonetic: 'בי' },
+            { english: 'at', hebrew: 'ב־', phonetic: 'אט' },
+            { english: 'an', hebrew: '—', phonetic: 'אן' },
+            { english: 'ambulance', hebrew: 'אמבולנס', phonetic: 'אמבולנס' },
+            { english: 'apple', hebrew: 'תפוח', phonetic: 'אפל' },
+            { english: 'avocado', hebrew: 'אבוקדו', phonetic: 'אבוקאדו' },
+            { english: 'mouse', hebrew: 'עכבר', phonetic: 'מאוס' },
+            { english: 'moon', hebrew: 'ירח', phonetic: 'מון' },
+            { english: 'balloon', hebrew: 'בלון', phonetic: 'באלון' },
+            { english: 'dad', hebrew: 'אבא', phonetic: 'דאד' },
+            { english: 'mad', hebrew: 'כועס', phonetic: 'מאד' },
+            { english: 'did', hebrew: 'עשה', phonetic: 'דיד' },
+            { english: 'dib', hebrew: '—', phonetic: 'דיב' },
+            { english: 'din', hebrew: 'רעש', phonetic: 'דין' },
+            { english: 'Tim', hebrew: 'טים', phonetic: 'טים' },
+            { english: 'bit', hebrew: 'קצת', phonetic: 'ביט' },
+            { english: 'tin', hebrew: 'פח', phonetic: 'טין' },
+            { english: 'in', hebrew: 'בתוך', phonetic: 'אין' },
+            { english: 'bin', hebrew: 'פח אשפה', phonetic: 'בין' },
+            { english: 'mint', hebrew: 'מנטה', phonetic: 'מינט' },
+            { english: 'egg', hebrew: 'ביצה', phonetic: 'אֶג' },
+            { english: 'doll', hebrew: 'בובה', phonetic: 'דול' },
+            { english: 'dress', hebrew: 'שמלה', phonetic: 'דרס' },
+            { english: 'door', hebrew: 'דלת', phonetic: 'דור' },
+            { english: 'dog', hebrew: 'כלב', phonetic: 'דוג' },
+            { english: 'yoyo', hebrew: 'יויו', phonetic: 'יו־יו' },
+            { english: 'has', hebrew: 'יש לו', phonetic: 'האז' },
+            { english: 'hit', hebrew: 'להכות', phonetic: 'היט' },
+            { english: 'hid', hebrew: 'החביא', phonetic: 'היד' },
+            { english: 'his', hebrew: 'שלו', phonetic: 'היז' },
+            { english: 'eye', hebrew: 'עין', phonetic: 'איי' },
+            { english: 'am', hebrew: 'אני / הינני', phonetic: 'אמ' },
+            { english: 'bam', hebrew: '(sound effect) / במכה', phonetic: 'באם' },
+            { english: 'heart', hebrew: 'לב', phonetic: 'הארט' },
+            { english: 'room', hebrew: 'חדר', phonetic: 'רום' },
+            { english: 'sand', hebrew: 'חול', phonetic: 'סאנד' },
+            { english: 'snakes', hebrew: 'נחשים', phonetic: 'סנייקס' },
+            { english: 'star', hebrew: 'כוכב', phonetic: 'סטאר' },
+            { english: 'your', hebrew: 'שלך / שלכם', phonetic: 'יור' },
+            { english: 'water', hebrew: 'מים', phonetic: 'ווטר' },
+            { english: 'woman', hebrew: 'אישה', phonetic: 'וומאן' },
+            { english: 'watch', hebrew: 'שעון / לצפות', phonetic: 'ווץ\'' },
+            { english: 'work', hebrew: 'עבודה', phonetic: 'וורק' },
+            { english: 'where', hebrew: 'איפה', phonetic: 'וואר / וור' },
+            { english: 'uncle', hebrew: 'דוד', phonetic: 'אנקל' },
+            { english: 'ugly', hebrew: 'מכוער', phonetic: 'אג־לי' },
+            { english: 'umbrella', hebrew: 'מטריה', phonetic: 'אמברלה' },
+            { english: 'under', hebrew: 'מתחת', phonetic: 'אנדר' },
+            { english: 'upset', hebrew: 'עצוב / נסער', phonetic: 'אפסט' },
+            { english: 'up', hebrew: 'למעלה', phonetic: 'אפ' },
+            { english: 'queen', hebrew: 'מלכה', phonetic: 'קווין' },
+            { english: 'quiz', hebrew: 'בוחן / חידון', phonetic: 'קוויז' },
+            { english: 'quick', hebrew: 'מהיר', phonetic: 'קוויק' },
+            { english: 'quit', hebrew: 'להפסיק / להתפטר', phonetic: 'קווייט' },
+            { english: 'question', hebrew: 'שאלה', phonetic: 'קווסטשן' },
+            { english: 'quill', hebrew: 'נוצת כתיבה', phonetic: 'קוויל' },
+            { english: 'zebra', hebrew: 'זברה', phonetic: 'זיברה' },
+            { english: 'zoo', hebrew: 'גן חיות', phonetic: 'זו' },
+            { english: 'zipper', hebrew: 'רוכסן', phonetic: 'זיפר' },
+            { english: 'voice', hebrew: 'קול', phonetic: 'וויס' },
+            { english: 'visit', hebrew: 'ביקור', phonetic: 'ויזיט' },
+            { english: 'vacation', hebrew: 'חופשה', phonetic: 'וקיישן' },
+            { english: 'village', hebrew: 'כפר', phonetic: 'וילג\'' },
+            { english: 'victory', hebrew: 'ניצחון', phonetic: 'ויקטורי' }
+        ];
+
+        let currentWord = null;
+        let revealedField = null;
+        let isRevealed = false;
+
+        // Navigation functions
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function goToMenu() {
+            showScreen('menuScreen');
+            // Reset spelling game stats when returning to menu
+            spellingTotalAttempts = 0;
+            spellingCorrectAttempts = 0;
+            updateSpellingStats();
+        }
+
+        function startFlashcards() {
+            showScreen('flashcardScreen');
+            loadNewWord();
+        }
+
+        // Flashcard logic
+        function loadNewWord() {
+            // Pick a random word
+            currentWord = words[Math.floor(Math.random() * words.length)];
+
+            // Pick a random field to reveal (0: english, 1: hebrew, 2: phonetic)
+            revealedField = Math.floor(Math.random() * 3);
+
+            // Reset state
+            isRevealed = false;
+
+            // Update display
+            updateDisplay();
+
+            // Reset button
+            const actionBtn = document.getElementById('actionBtn');
+            actionBtn.textContent = 'גלה';
+        }
+
+        function updateDisplay() {
+            const englishEl = document.getElementById('englishValue');
+            const hebrewEl = document.getElementById('hebrewValue');
+            const phoneticEl = document.getElementById('phoneticValue');
+
+            if (isRevealed) {
+                // Show all fields
+                englishEl.innerHTML = currentWord.english;
+                englishEl.classList.remove('question-marks');
+
+                hebrewEl.innerHTML = currentWord.hebrew;
+                hebrewEl.classList.remove('question-marks');
+
+                phoneticEl.innerHTML = currentWord.phonetic;
+                phoneticEl.classList.remove('question-marks');
+            } else {
+                // Show only the revealed field
+                if (revealedField === 0) {
+                    englishEl.innerHTML = currentWord.english;
+                    englishEl.classList.remove('question-marks');
+                    hebrewEl.innerHTML = '???';
+                    hebrewEl.classList.add('question-marks');
+                    phoneticEl.innerHTML = '???';
+                    phoneticEl.classList.add('question-marks');
+                } else if (revealedField === 1) {
+                    englishEl.innerHTML = '???';
+                    englishEl.classList.add('question-marks');
+                    hebrewEl.innerHTML = currentWord.hebrew;
+                    hebrewEl.classList.remove('question-marks');
+                    phoneticEl.innerHTML = '???';
+                    phoneticEl.classList.add('question-marks');
+                } else {
+                    englishEl.innerHTML = '???';
+                    englishEl.classList.add('question-marks');
+                    hebrewEl.innerHTML = '???';
+                    hebrewEl.classList.add('question-marks');
+                    phoneticEl.innerHTML = currentWord.phonetic;
+                    phoneticEl.classList.remove('question-marks');
+                }
+            }
+        }
+
+        function handleAction() {
+            const actionBtn = document.getElementById('actionBtn');
+
+            if (!isRevealed) {
+                // Reveal all fields
+                isRevealed = true;
+                updateDisplay();
+                actionBtn.textContent = 'הבא';
+            } else {
+                // Load next word
+                loadNewWord();
+            }
+        }
+
+        // Spelling Game Variables
+        let spellingCurrentWord = null;
+        let spellingIsChecked = false;
+        let spellingTotalAttempts = 0;
+        let spellingCorrectAttempts = 0;
+        let spellingWordList = words; // Track which word list to use
+
+        // Spelling Game Functions
+        function startSpellingGame() {
+            spellingWordList = words; // Use all words
+            showScreen('spellingGameScreen');
+            loadNewSpellingWord();
+        }
+
+        function startSpellingGameShort() {
+            // Filter words with 5 or fewer letters
+            spellingWordList = words.filter(word => word.english.length <= 5);
+            showScreen('spellingGameScreen');
+            loadNewSpellingWord();
+        }
+
+        function loadNewSpellingWord() {
+            // Pick a random word from the active word list
+            spellingCurrentWord = spellingWordList[Math.floor(Math.random() * spellingWordList.length)];
+            spellingIsChecked = false;
+
+            // Update display
+            document.getElementById('spellingHebrew').textContent = spellingCurrentWord.hebrew;
+            document.getElementById('spellingPhonetic').textContent = spellingCurrentWord.phonetic;
+
+            // Reset input and feedback
+            const input = document.getElementById('spellingInput');
+            input.value = '';
+            input.className = 'spelling-input';
+            input.disabled = false;
+            input.focus();
+
+            const feedback = document.getElementById('feedbackMessage');
+            feedback.textContent = '';
+            feedback.className = 'feedback-message';
+
+            // Reset button
+            const actionBtn = document.getElementById('spellingActionBtn');
+            actionBtn.textContent = 'בדוק';
+        }
+
+        function updateSpellingStats() {
+            document.getElementById('totalAttempts').textContent = spellingTotalAttempts;
+            document.getElementById('correctAttempts').textContent = spellingCorrectAttempts;
+        }
+
+        function handleSpellingAction() {
+            if (!spellingIsChecked) {
+                // Check the spelling
+                checkSpelling();
+            } else {
+                // Load next word
+                loadNewSpellingWord();
+            }
+        }
+
+        function checkSpelling() {
+            const input = document.getElementById('spellingInput');
+            const userAnswer = input.value.trim().toLowerCase();
+            const correctAnswer = spellingCurrentWord.english.toLowerCase();
+            const feedback = document.getElementById('feedbackMessage');
+            const actionBtn = document.getElementById('spellingActionBtn');
+
+            spellingIsChecked = true;
+            spellingTotalAttempts++;
+            input.disabled = true;
+
+            if (userAnswer === correctAnswer) {
+                // Correct answer
+                spellingCorrectAttempts++;
+                input.classList.add('correct');
+                feedback.textContent = '✓ נכון! ' + spellingCurrentWord.english;
+                feedback.className = 'feedback-message correct';
+
+                // Show confetti and stars
+                showConfetti();
+            } else {
+                // Incorrect answer
+                input.classList.add('incorrect');
+                feedback.textContent = '✗ לא נכון. התשובה הנכונה: ' + spellingCurrentWord.english;
+                feedback.className = 'feedback-message incorrect';
+            }
+
+            // Update stats
+            updateSpellingStats();
+
+            // Change button to "next"
+            actionBtn.textContent = 'הבא';
+        }
+
+        function showConfetti() {
+            const container = document.getElementById('confettiContainer');
+            container.classList.add('active');
+
+            // Create confetti particles
+            const colors = ['#f44336', '#e91e63', '#9c27b0', '#3f51b5', '#2196f3', '#00bcd4', '#4caf50', '#ffeb3b', '#ff9800'];
+
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.setProperty('--x-drift', (Math.random() * 200 - 100) + 'px');
+                    container.appendChild(confetti);
+
+                    setTimeout(() => confetti.remove(), 2000);
+                }, i * 20);
+            }
+
+            // Create stars
+            const starPositions = [
+                { top: '20%', left: '20%' },
+                { top: '20%', left: '80%' },
+                { top: '50%', left: '50%' },
+                { top: '70%', left: '30%' },
+                { top: '70%', left: '70%' }
+            ];
+
+            starPositions.forEach((pos, index) => {
+                setTimeout(() => {
+                    const star = document.createElement('div');
+                    star.className = 'star';
+                    star.textContent = '⭐';
+                    star.style.top = pos.top;
+                    star.style.left = pos.left;
+                    container.appendChild(star);
+
+                    setTimeout(() => star.remove(), 2000);
+                }, index * 100);
+            });
+
+            // Hide confetti container after animation
+            setTimeout(() => {
+                container.classList.remove('active');
+            }, 2000);
+        }
+
+        // Allow Enter key to submit in spelling game
+        document.addEventListener('DOMContentLoaded', function() {
+            const spellingInput = document.getElementById('spellingInput');
+            if (spellingInput) {
+                spellingInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        handleSpellingAction();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
